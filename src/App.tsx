@@ -1,14 +1,14 @@
 import React, { useState, useCallback } from 'react';
-import { MemeCategory, GenerationState } from './types';
-import { generateMeme } from './geminiService';
-import { MemeCard } from './components/MemeCard'; // Changed component
-import { Sparkles, Palette, Laugh, AlertCircle, Share2, Download, Loader2 } from 'lucide-react';
+import { AuthorCategory, GenerationState } from './types';
+import { generateQuote } from './geminiService';
+import { QuoteCard } from './components/QuoteCard';
+import { Sparkles, BookOpen, Heart, AlertCircle, Share2, Download, Loader2 } from 'lucide-react';
 import * as htmlToImage from 'html-to-image';
 
-const CATEGORIES = Object.values(MemeCategory);
+const AUTHORS = Object.values(AuthorCategory);
 
 const App: React.FC = () => {
-  const [selectedCategory, setSelectedCategory] = useState<MemeCategory>(MemeCategory.FunkyBhai);
+  const [selectedAuthor, setSelectedAuthor] = useState<AuthorCategory>(AuthorCategory.HumayunAhmed);
   const [isDownloading, setIsDownloading] = useState(false);
   const [state, setState] = useState<GenerationState>({
     loading: false,
@@ -19,7 +19,7 @@ const App: React.FC = () => {
   const handleGenerate = useCallback(async () => {
     setState(prev => ({ ...prev, loading: true, error: null }));
     try {
-      const result = await generateMeme(selectedCategory);
+      const result = await generateQuote(selectedAuthor);
       setState({
         loading: false,
         error: null,
@@ -32,10 +32,10 @@ const App: React.FC = () => {
         data: null,
       });
     }
-  }, [selectedCategory]);
+  }, [selectedAuthor]);
 
   const handleDownload = async () => {
-    const element = document.getElementById('meme-card-capture'); // Changed ID
+    const element = document.getElementById('quote-card-capture');
     if (!element || !state.data) return;
     
     setIsDownloading(true);
@@ -49,7 +49,7 @@ const App: React.FC = () => {
       });
       
       const link = document.createElement('a');
-      const filename = `saatmishaali-${state.data.category.toLowerCase().replace(/\s+/g, '-')}-meme.png`;
+      const filename = `saatmishaali-${state.data.author.replace(/\s+/g, '-').toLowerCase()}-quote.png`;
       link.download = filename;
       link.href = dataUrl;
       link.click();
@@ -63,11 +63,11 @@ const App: React.FC = () => {
 
   const handleShare = async () => {
     if (!state.data) return;
-    const text = `${state.data.text} - via Saatmishaali AI`;
+    const text = `"${state.data.quote}" - ${state.data.author}\n\nvia Saatmishaali AI`;
     if (navigator.share) {
       try {
         await navigator.share({
-          title: 'Saatmishaali Meme',
+          title: 'Saatmishaali Quote',
           text: text,
           url: window.location.href,
         });
@@ -76,7 +76,7 @@ const App: React.FC = () => {
       }
     } else {
       navigator.clipboard.writeText(text);
-      alert("Meme copied to clipboard!");
+      alert("Quote copied to clipboard!");
     }
   };
 
@@ -88,7 +88,7 @@ const App: React.FC = () => {
           <div className="flex items-center gap-2">
             <div className="flex flex-col items-center gap-2">
               <img
-                src="/saatmishaali-logo.png" // Update logo path
+                src="/saatmishaali-logo.png"
                 alt="Saatmishaali Logo"
                 className="opacity-90"
                 style={{
@@ -102,8 +102,8 @@ const App: React.FC = () => {
             </span>
           </div>
           <div className="hidden sm:flex items-center gap-6 text-sm font-medium text-slate-500">
-            <a href="#" className="hover:text-orange-600 transition-colors">Categories</a>
-            <a href="#" className="hover:text-orange-600 transition-colors">Templates</a>
+            <a href="#" className="hover:text-orange-600 transition-colors">Authors</a>
+            <a href="#" className="hover:text-orange-600 transition-colors">Themes</a>
             <a href="#" className="hover:text-orange-600 transition-colors">About</a>
           </div>
         </div>
@@ -115,38 +115,38 @@ const App: React.FC = () => {
           {/* Controls Column */}
           <div className="space-y-8">
             <header className="space-y-4">
-              <div className="inline-flex items-center gap-2 px-3 py-1 bg-orange-50 text-orange-600 text-xs font-bold uppercase tracking-wider rounded-full">
-                <Laugh size={14} />
-                Authentic Bengali Memes
+              <div className="inline-flex items-center gap-2 px-3 py-1 bg-indigo-50 text-orange-600 text-xs font-bold uppercase tracking-wider rounded-full">
+                <BookOpen size={14} />
+                Bengali Literary Quotes
               </div>
               <h1 className="text-4xl md:text-5xl font-black text-teal-800 leading-[1.1]">
-                Stop searching. <br />
-                <span className="text-orange-600">Start generating.</span>
+                Discover wisdom. <br />
+                <span className="text-orange-600">Feel the words.</span>
               </h1>
               <p className="text-lg text-slate-500 max-w-md">
-                Create original, hilarious Bengali memes in seconds. Perfect for Facebook, WhatsApp, or Instagram.
+                Generate authentic Bengali quotes from legendary authors. Emotional, philosophical, and deeply meaningful.
               </p>
             </header>
 
             <section className="space-y-6">
               <div className="space-y-3">
                 <label className="text-sm font-bold text-slate-700 uppercase tracking-widest flex items-center gap-2">
-                  <Palette size={14} />
-                  Choose Meme Category
+                  <BookOpen size={14} />
+                  Select Author
                 </label>
                 <div className="grid grid-cols-2 gap-2">
-                  {CATEGORIES.map(category => (
+                  {AUTHORS.map(author => (
                     <button
-                      key={category}
-                      onClick={() => setSelectedCategory(category)}
+                      key={author}
+                      onClick={() => setSelectedAuthor(author)}
                       className={`
                         px-4 py-3 rounded-lg text-sm font-medium border transition-all duration-200 text-left
-                        ${selectedCategory === category 
+                        ${selectedAuthor === author 
                           ? 'bg-teal-800 border-teal-800 text-white shadow-lg ring-2 ring-orange-500 ring-offset-2' 
                           : 'bg-white border-slate-200 text-slate-600 hover:border-slate-300 hover:bg-slate-50'}
                       `}
                     >
-                      {category}
+                      {author}
                     </button>
                   ))}
                 </div>
@@ -160,12 +160,12 @@ const App: React.FC = () => {
                 {state.loading ? (
                   <>
                     <Loader2 size={20} className="animate-spin" />
-                    Generating Meme...
+                    Generating Quote...
                   </>
                 ) : (
                   <>
                     <Sparkles size={20} className="group-hover:rotate-12 transition-transform" />
-                    Generate Bengali Meme
+                    Generate Bengali Quote
                   </>
                 )}
               </button>
@@ -182,10 +182,10 @@ const App: React.FC = () => {
           {/* Preview Column */}
           <div className="flex flex-col items-center gap-8 sticky top-32">
             <div className="w-full flex justify-center">
-              <MemeCard 
+              <QuoteCard 
                 data={state.data} 
                 loading={state.loading} 
-                id="meme-card-capture"
+                id="quote-card-capture"
               />
             </div>
 
@@ -213,7 +213,7 @@ const App: React.FC = () => {
                   className="px-6 py-2.5 bg-white border border-slate-200 text-slate-700 font-bold rounded-full shadow-sm hover:shadow-md transition-all flex items-center gap-2"
                 >
                   <Share2 size={18} />
-                  Share Meme
+                  Share Quote
                 </button>
               </div>
             )}
@@ -229,7 +229,7 @@ const App: React.FC = () => {
             <div className="flex items-center gap-2 opacity-60 grayscale hover:grayscale-0 transition-all">
               <span className="font-bold text-lg text-teal-800">Saatmishaali AI</span>
             </div>
-            <p className="text-xs text-slate-400">© 2026 Built for developers by DevZodiac Inc.</p>
+            <p className="text-xs text-slate-400">© 2026 Built for quote-lovers by DevZodiac Inc.</p>
           </div>
           <div className="flex gap-8 text-xs font-bold text-slate-400 uppercase tracking-widest">
             <a href="#" className="hover:text-teal-800 transition-colors">GitHub</a>

@@ -1,19 +1,19 @@
 import React from 'react';
-import { MemeData } from '../types';
-import { Copy, Check, Laugh } from 'lucide-react';
+import { QuoteData } from '../types';
+import { Copy, Check, BookOpen } from 'lucide-react';
 
-interface MemeCardProps {
-  data: MemeData | null;
+interface QuoteCardProps {
+  data: QuoteData | null;
   loading: boolean;
   id?: string;
 }
 
-export const MemeCard: React.FC<MemeCardProps> = ({ data, loading, id }) => {
+export const QuoteCard: React.FC<QuoteCardProps> = ({ data, loading, id }) => {
   const [copied, setCopied] = React.useState(false);
 
   const handleCopy = () => {
-    if (data?.text) {
-      navigator.clipboard.writeText(data.text);
+    if (data?.quote) {
+      navigator.clipboard.writeText(data.quote);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     }
@@ -36,9 +36,9 @@ export const MemeCard: React.FC<MemeCardProps> = ({ data, loading, id }) => {
   if (!data) {
     return (
       <div className="relative w-full max-w-md bg-gradient-to-br from-orange-50 to-teal-50 flex flex-col items-center justify-center p-12 text-slate-400 border-4 border-dashed border-orange-300 rounded-xl">
-        <Laugh size={56} className="mb-6 text-orange-300" />
-        <p className="font-medium text-center text-lg mb-2">Select your category</p>
-        <p className="text-sm text-center">Generate your first Bengali meme!</p>
+        <BookOpen size={56} className="mb-6 text-orange-300" />
+        <p className="font-medium text-center text-lg mb-2">Select your author</p>
+        <p className="text-sm text-center">Generate your first Bengali literary quote!</p>
       </div>
     );
   }
@@ -68,19 +68,19 @@ export const MemeCard: React.FC<MemeCardProps> = ({ data, loading, id }) => {
           </span>
         </div>
 
-        {/* Meme Text Container */}
+        {/* Quote Text Container */}
         <div className="flex-1 flex items-center justify-center py-6 px-4 w-full">
           <div className="bg-gradient-to-r from-orange-100 to-yellow-50 p-6 rounded-lg border-2 border-orange-200 w-full">
             <p className="text-2xl md:text-3xl font-bold text-center leading-relaxed text-slate-800">
-              {data.text}
+              "{data.quote}"
             </p>
           </div>
         </div>
 
-        {/* Meme Template Indicator */}
-        <div className="mt-6 px-4 py-2 bg-orange-500 rounded-full">
+        {/* Author Indicator */}
+        <div className="mt-6 px-4 py-2 bg-teal-100 rounded-full">
           <span className="text-sm font-semibold text-teal-900">
-            {data.category}  {"Memes"}
+             {data.author} {/*• {data.category} */}
           </span>
         </div>
 
@@ -97,7 +97,7 @@ export const MemeCard: React.FC<MemeCardProps> = ({ data, loading, id }) => {
       <button 
         onClick={handleCopy}
         className="absolute top-4 right-4 p-2 bg-white/90 hover:bg-white text-teal-700 rounded-full shadow-lg transition-all opacity-0 group-hover:opacity-100 backdrop-blur-sm border border-teal-200"
-        title="Copy Meme Text"
+        title="Copy Quote Text"
       >
         {copied ? <Check size={18} className="text-green-600" /> : <Copy size={18} />}
       </button>
